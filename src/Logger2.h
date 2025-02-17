@@ -26,7 +26,9 @@
 #include <cassert>
 #include <iostream>
 
-#include <opencv2/opencv.hpp>
+#include <opencv4/opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 #ifndef Q_MOC_RUN
 #include <boost/format.hpp>
@@ -82,7 +84,7 @@ class Logger2
 
         int depth_compress_buf_size;
         uint8_t * depth_compress_buf;
-        CvMat * encodedImage;
+        cv::Mat encodedImage;
 
         int lastWritten;
         boost::thread * writeThread;
