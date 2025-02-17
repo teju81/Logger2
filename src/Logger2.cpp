@@ -46,10 +46,10 @@ Logger2::~Logger2()
 
     assert(!writing.getValue() && "Please stop writing cleanly first");
 
-    if(encodedImage != 0)
-    {
-        cvReleaseMat(&encodedImage);
-    }
+    // if(encodedImage != 0)
+    // {
+    //     cvReleaseMat(&encodedImage);
+    // }
 
     delete openNI2Interface;
 
@@ -60,24 +60,49 @@ Logger2::~Logger2()
     }
 }
 
-
-void Logger2::encodeJpeg(cv::Vec<unsigned char, 3> * rgb_data)
-{
+void Logger2::encodeJpeg(cv::Vec<unsigned char, 3>* rgb_data) {
+    // Create a cv::Mat header for the RGB data
     cv::Mat3b rgb(height, width, rgb_data, width * 3);
 
-    IplImage * img = new IplImage(rgb);
+    // Vector to hold the encoded image data
+    std::vector<uchar> encodedImage;
 
-    int jpeg_params[] = {CV_IMWRITE_JPEG_QUALITY, 90, 0};
+    // Set JPEG compression parameters
+    std::vector<int> jpeg_params = {cv::IMWRITE_JPEG_QUALITY, 90};
 
-    if(encodedImage != 0)
-    {
-        cvReleaseMat(&encodedImage);
+    // Encode the image into JPEG format
+    bool success = cv::imencode(".jpg", rgb, encodedImage, jpeg_params);
+
+    if (!success) {
+        // Handle the error: encoding failed
+        std::cerr << "Error: JPEG encoding failed." << std::endl;
+        return;
     }
 
-    encodedImage = cvEncodeImage(".jpg", img, jpeg_params);
-
-    delete img;
+    // At this point, 'encodedImage' contains the JPEG-encoded data
+    // You can now use 'encodedImage' as needed, for example:
+    // - Save to a file
+    // - Send over a network
+    // - Store in a database
 }
+
+// void Logger2::encodeJpeg(cv::Vec<unsigned char, 3> * rgb_data)
+// {
+//     cv::Mat3b rgb(height, width, rgb_data, width * 3);
+
+//     IplImage * img = new IplImage(rgb);
+
+//     int jpeg_params[] = {CV_IMWRITE_JPEG_QUALITY, 90, 0};
+
+//     if(encodedImage != 0)
+//     {
+//         cvReleaseMat(&encodedImage);
+//     }
+
+//     encodedImage = cvEncodeImage(".jpg", img, jpeg_params);
+
+//     delete img;
+// }
 
 void Logger2::startWriting(std::string filename)
 {
@@ -176,10 +201,10 @@ void Logger2::loggingThread()
 
             threads.join_all();
 
-            rgbSize = encodedImage->width;
+            rgbSize = encodedImage.cols;
 
             depthData = (unsigned char *)depth_compress_buf;
-            rgbData = (unsigned char *)encodedImage->data.ptr;
+            rgbData = encodedImage.data;
         }
         else
         {
