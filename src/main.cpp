@@ -433,7 +433,7 @@ void MainWindow::timerCallback()
     normalize(depth, tmp, 0, 255, cv::NORM_MINMAX, 0);
 
     cv::Mat3b depthImg(height, width, (cv::Vec<unsigned char, 3> *)depthImage.bits());
-    cv::cvtColor(tmp, depthImg, CV_GRAY2RGB);
+    cv::cvtColor(tmp, depthImg, cv::COLOR_GRAY2RGB);
 
     painter->setPen(recording ? Qt::red : Qt::green);
     painter->setFont(QFont("Arial", 30));
